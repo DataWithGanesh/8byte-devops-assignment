@@ -1,8 +1,8 @@
 resource "aws_db_instance" "postgres" {
-  identifier        = "devops-postgres"
+  identifier = "devops-postgres"
 
-  engine            = "postgres"
-  engine_version    = "16.4"
+  engine         = "postgres"
+  engine_version = "16.4"
 
   instance_class    = "db.t3.micro"
   allocated_storage = 20
