@@ -1,6 +1,38 @@
-resource "aws_db_instance" "postgres" {
-  identifier = "devops-postgres"
+resource "aws_db_subnet_group" "postgres" {
+  name       = "postgres-subnet-group"
+  subnet_ids = module.vpc.private_subnets
 
+  tags = {
+    Name = "postgres-subnet-group"
+  }
+}
+
+resource "aws_security_group" "rds_sg" {
+  name        = "rds-sg"
+  description = "Security Group for PostgreSQL"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/16"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "rds-sg"
+  }
+}
+
+resource "aws_db_instance" "postgres" {
+  identifier     = "devops-postgres"
   engine         = "postgres"
   engine_version = "16.4"
 
@@ -12,8 +44,7 @@ resource "aws_db_instance" "postgres" {
   password = var.db_password
 
   publicly_accessible = false
-
-  storage_encrypted = true
+  storage_encrypted   = true
 
   skip_final_snapshot       = false
   final_snapshot_identifier = "devops-postgres-final-snapshot"
