@@ -44,7 +44,7 @@ module "eks" {
   }
 
   # EKS API endpoint access
-  endpoint_public_access  = true
+  endpoint_public_access  = false
   endpoint_private_access = true
 
   # Restrict public API access to your IP
