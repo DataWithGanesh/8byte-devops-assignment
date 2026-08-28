@@ -29,7 +29,15 @@ module "eks" {
   name               = "terraform-cluster"
   kubernetes_version = "1.33"
 
+  # Disable recommended public egress rules
   node_security_group_enable_recommended_rules = false
+
+  # Encrypt Kubernetes secrets
+  create_kms_key = true
+
+  cluster_encryption_config = {
+    resources = ["secrets"]
+  }
 
   addons = {
     coredns = {}
@@ -45,6 +53,7 @@ module "eks" {
     }
   }
 
+  # Private API only
   endpoint_public_access  = false
   endpoint_private_access = true
 
@@ -62,6 +71,12 @@ module "eks" {
       min_size     = 1
       desired_size = 1
       max_size     = 2
+
+      # IMDSv2 required
+      metadata_options = {
+        http_endpoint = "enabled"
+        http_tokens   = "required"
+      }
     }
   }
 

@@ -55,13 +55,22 @@ module "bastion_host" {
   name          = "bastion-host"
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t3.micro"
-  key_name      = aws_key_pair.bastion_keypair.key_name
-  monitoring    = true
+
+  key_name   = aws_key_pair.bastion_keypair.key_name
+  monitoring = true
 
   subnet_id              = element(module.vpc.public_subnets, 0)
   vpc_security_group_ids = [aws_security_group.bastion_sg.id]
 
   associate_public_ip_address = true
+
+  root_block_device = [
+    {
+      encrypted   = true
+      volume_size = 10
+      volume_type = "gp3"
+    }
+  ]
 
   tags = {
     Terraform   = "true"
