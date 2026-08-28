@@ -36,6 +36,8 @@ resource "aws_security_group" "rds_sg" {
 resource "aws_kms_key" "rds" {
   description             = "KMS key for RDS Performance Insights"
   deletion_window_in_days = 7
+
+  enable_key_rotation = true
 }
 
 resource "aws_db_instance" "postgres" {
