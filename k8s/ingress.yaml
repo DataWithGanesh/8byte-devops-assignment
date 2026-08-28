@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: 8byte-devops-ingress
+  namespace: dev
+
+spec:
+  ingressClassName: nginx
+
+  rules:
+    - host: app.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: 8byte-devops-service
+                port:
+                  number: 80
