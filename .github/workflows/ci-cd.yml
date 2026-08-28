@@ -32,8 +32,27 @@ jobs:
           cd app
           npm test || echo "No tests configured"
 
-  docker-build:
+  terraform-check:
     needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: terraform
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: terraform
+        run: terraform validate
+
+  docker-build:
+    needs: terraform-check
     runs-on: ubuntu-latest
 
     steps:
