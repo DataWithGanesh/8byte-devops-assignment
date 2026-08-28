@@ -1,4 +1,4 @@
-# Generate a key and registers it in AWS.
+# Generate a key and register it in AWS
 
 resource "tls_private_key" "bastion_key" {
   algorithm = "RSA"
@@ -9,7 +9,6 @@ resource "aws_key_pair" "bastion_keypair" {
   key_name   = "bastion-key"
   public_key = tls_private_key.bastion_key.public_key_openssh
 }
-
 
 # Save the private key locally
 
@@ -22,19 +21,20 @@ resource "local_file" "bastion_private_key" {
 # Security Group for Bastion
 
 resource "aws_security_group" "bastion_sg" {
-  name   = "bastion-sg"
-  vpc_id = module.vpc.vpc_id
+  name        = "bastion-sg"
+  description = "Security group for Bastion host"
+  vpc_id      = module.vpc.vpc_id
 
   ingress {
-    description = "SSH from my IP"
+    description = "Allow SSH from current public IP"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["${chomp(data.http.my_ip.response_body)}/32"]
   }
 
-
   egress {
+    description = "Allow outbound traffic within VPC"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -45,7 +45,6 @@ resource "aws_security_group" "bastion_sg" {
     Name = "bastion-sg"
   }
 }
-
 
 # Bastion Host
 
@@ -69,6 +68,7 @@ module "bastion_host" {
     volume_size = 10
     volume_type = "gp3"
   }
+
   tags = {
     Terraform   = "true"
     Environment = "dev"

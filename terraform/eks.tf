@@ -1,9 +1,10 @@
 resource "aws_security_group" "add_sg_eks" {
-  name   = "additional-eks-sg"
-  vpc_id = module.vpc.vpc_id
+  name        = "additional-eks-sg"
+  description = "Additional security group for EKS cluster"
+  vpc_id      = module.vpc.vpc_id
 
   ingress {
-    description     = "HTTPS from bastion host"
+    description     = "Allow HTTPS from bastion host"
     from_port       = 443
     to_port         = 443
     protocol        = "tcp"
@@ -11,6 +12,7 @@ resource "aws_security_group" "add_sg_eks" {
   }
 
   egress {
+    description = "Allow outbound traffic within VPC"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -32,6 +34,14 @@ module "eks" {
   # Disable recommended public egress rules
   node_security_group_enable_recommended_rules = false
 
+  # Enable EKS control plane logging
+  enabled_log_types = [
+    "api",
+    "audit",
+    "authenticator",
+    "controllerManager",
+    "scheduler"
+  ]
 
   addons = {
     coredns = {}

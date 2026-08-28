@@ -13,6 +13,7 @@ resource "aws_security_group" "rds_sg" {
   vpc_id      = module.vpc.vpc_id
 
   ingress {
+    description = "Allow PostgreSQL access from VPC"
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
@@ -20,6 +21,7 @@ resource "aws_security_group" "rds_sg" {
   }
 
   egress {
+    description = "Allow outbound traffic within VPC"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -31,8 +33,12 @@ resource "aws_security_group" "rds_sg" {
   }
 }
 
-resource "aws_db_instance" "postgres" {
+resource "aws_kms_key" "rds" {
+  description             = "KMS key for RDS Performance Insights"
+  deletion_window_in_days = 7
+}
 
+resource "aws_db_instance" "postgres" {
   identifier     = "devops-postgres"
   engine         = "postgres"
   engine_version = "16.4"
@@ -47,16 +53,19 @@ resource "aws_db_instance" "postgres" {
   publicly_accessible = false
   storage_encrypted   = true
 
-  performance_insights_enabled = true
+  performance_insights_enabled    = true
+  performance_insights_kms_key_id = aws_kms_key.rds.arn
+
+  iam_database_authentication_enabled = true
+
+  backup_retention_period = 7
 
   skip_final_snapshot       = false
   final_snapshot_identifier = "devops-postgres-final-snapshot"
 
-  backup_retention_period = 7
+  deletion_protection = true
 
   db_subnet_group_name = aws_db_subnet_group.postgres.name
-
-  deletion_protection = true
 
   vpc_security_group_ids = [
     aws_security_group.rds_sg.id
