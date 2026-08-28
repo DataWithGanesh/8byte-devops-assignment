@@ -1,0 +1,11 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# Sensitive files
+terraform/terraform.tfvars
+*.pem
+
+# Terraform plans
+*.tfplan
