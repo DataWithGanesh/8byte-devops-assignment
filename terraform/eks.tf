@@ -48,9 +48,9 @@ module "eks" {
   endpoint_private_access = true
 
   # Restrict public API access to your IP
-#   public_access_cidrs = [
-#     "27.61.45.115/32"
-#   ]
+  #   public_access_cidrs = [
+  #     "27.61.45.115/32"
+  #   ]
 
   enable_cluster_creator_admin_permissions = true
 
@@ -63,9 +63,9 @@ module "eks" {
       ami_type       = "AL2023_x86_64_STANDARD"
       instance_types = ["t3.small"]
 
-min_size     = 1
-desired_size = 1
-max_size     = 2
+      min_size     = 1
+      desired_size = 1
+      max_size     = 2
     }
   }
 

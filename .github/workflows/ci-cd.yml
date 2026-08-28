@@ -55,8 +55,21 @@ jobs:
         working-directory: terraform
         run: terraform validate
 
-  docker-build:
+  tfsec-scan:
     needs: terraform-check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: terraform
+
+  docker-build:
+    needs: tfsec-scan
     runs-on: ubuntu-latest
 
     steps:
@@ -71,11 +84,11 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t ganesh492/8byte-devops-app:latest ./app
+          docker build -t ganesh492/8byte-devops-app:${{ github.sha }} ./app
 
       - name: Push Docker Image
         run: |
-          docker push ganesh492/8byte-devops-app:latest
+          docker push ganesh492/8byte-devops-app:${{ github.sha }}
 
   trivy-scan:
     needs: docker-build
@@ -85,7 +98,7 @@ jobs:
       - name: Run Trivy Vulnerability Scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ganesh492/8byte-devops-app:latest
+          image-ref: ganesh492/8byte-devops-app:${{ github.sha }}
           format: table
           exit-code: 0
 
