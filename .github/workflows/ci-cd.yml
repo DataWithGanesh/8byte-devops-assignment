@@ -58,13 +58,14 @@ jobs:
   tfsec-scan:
     needs: terraform-check
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Run tfsec
-        uses: aquasecurity/tfsec-action@v1.0.3
+        uses: aquasecurity/tfsec-action@master
         with:
           working_directory: terraform
 

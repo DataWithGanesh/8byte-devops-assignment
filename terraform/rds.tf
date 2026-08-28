@@ -32,6 +32,7 @@ resource "aws_security_group" "rds_sg" {
 }
 
 resource "aws_db_instance" "postgres" {
+
   identifier     = "devops-postgres"
   engine         = "postgres"
   engine_version = "16.4"
@@ -45,6 +46,8 @@ resource "aws_db_instance" "postgres" {
 
   publicly_accessible = false
   storage_encrypted   = true
+
+  performance_insights_enabled = true
 
   skip_final_snapshot       = false
   final_snapshot_identifier = "devops-postgres-final-snapshot"
