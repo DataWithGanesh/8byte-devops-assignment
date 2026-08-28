@@ -1,6 +1,7 @@
 resource "aws_security_group" "add_sg_eks" {
   name   = "additional-eks-sg"
   vpc_id = module.vpc.vpc_id
+
   ingress {
     description     = "HTTPS from bastion host"
     from_port       = 443
@@ -9,12 +10,11 @@ resource "aws_security_group" "add_sg_eks" {
     security_groups = [aws_security_group.bastion_sg.id]
   }
 
-
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["10.0.0.0/16"]
   }
 
   tags = {
@@ -28,6 +28,8 @@ module "eks" {
 
   name               = "terraform-cluster"
   kubernetes_version = "1.33"
+
+  node_security_group_enable_recommended_rules = false
 
   addons = {
     coredns = {}
@@ -43,14 +45,8 @@ module "eks" {
     }
   }
 
-  # EKS API endpoint access
   endpoint_public_access  = false
   endpoint_private_access = true
-
-  # Restrict public API access to your IP
-  #   public_access_cidrs = [
-  #     "27.61.45.115/32"
-  #   ]
 
   enable_cluster_creator_admin_permissions = true
 
