@@ -22,6 +22,10 @@ spec:
         - name: 8byte-devops-app
           image: ganesh492/8byte-devops-app:latest
 
+          envFrom:
+            - configMapRef:
+                name: app-config
+
           ports:
             - containerPort: 3000
 
