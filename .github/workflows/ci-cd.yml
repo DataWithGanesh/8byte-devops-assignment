@@ -88,3 +88,21 @@ jobs:
           image-ref: ganesh492/8byte-devops-app:latest
           format: table
           exit-code: 0
+
+  k8s-validate:
+    needs: trivy-scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Kubeconform
+        run: |
+          curl -L https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz -o kubeconform.tar.gz
+          tar -xzf kubeconform.tar.gz
+          sudo mv kubeconform /usr/local/bin/
+
+      - name: Validate Kubernetes Manifests
+        run: |
+          kubeconform k8s/*.yaml
