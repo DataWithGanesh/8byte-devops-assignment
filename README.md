@@ -15,6 +15,7 @@
 
 terraform/
 ├── terraform.tf
+
 ├── variables.tf
 ├── terraform.tfvars.example
 ├── vpc.tf
