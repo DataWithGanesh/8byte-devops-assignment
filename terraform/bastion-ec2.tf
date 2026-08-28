@@ -64,14 +64,11 @@ module "bastion_host" {
 
   associate_public_ip_address = true
 
-  root_block_device = [
-    {
-      encrypted   = true
-      volume_size = 10
-      volume_type = "gp3"
-    }
-  ]
-
+  root_block_device = {
+    encrypted   = true
+    volume_size = 10
+    volume_type = "gp3"
+  }
   tags = {
     Terraform   = "true"
     Environment = "dev"

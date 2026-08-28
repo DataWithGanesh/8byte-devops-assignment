@@ -32,12 +32,6 @@ module "eks" {
   # Disable recommended public egress rules
   node_security_group_enable_recommended_rules = false
 
-  # Encrypt Kubernetes secrets
-  create_kms_key = true
-
-  cluster_encryption_config = {
-    resources = ["secrets"]
-  }
 
   addons = {
     coredns = {}
