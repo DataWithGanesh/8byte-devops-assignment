@@ -14,8 +14,7 @@
 ## Terraform Structure
 
 terraform/
-├── terraform.tf
-
+├── terraform.tf //
 ├── variables.tf
 ├── terraform.tfvars.example
 ├── vpc.tf
