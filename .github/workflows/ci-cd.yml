@@ -73,13 +73,18 @@ jobs:
         run: |
           docker build -t ganesh492/8byte-devops-app:latest ./app
 
+      - name: Push Docker Image
+        run: |
+          docker push ganesh492/8byte-devops-app:latest
+
+  trivy-scan:
+    needs: docker-build
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Run Trivy Vulnerability Scan
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ganesh492/8byte-devops-app:latest
           format: table
           exit-code: 0
-
-      - name: Push Docker Image
-        run: |
-          docker push ganesh492/8byte-devops-app:latest
