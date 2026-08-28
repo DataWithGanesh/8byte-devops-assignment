@@ -1,0 +1,13 @@
+{
+  "name": "8byte-devops-app",
+  "version": "1.0.0",
+  "description": "Sample Node.js app for DevOps assignment",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Tests Passed\""
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

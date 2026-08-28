@@ -15,6 +15,7 @@
 
 terraform/
 ├── terraform.tf
+
 ├── variables.tf
 ├── terraform.tfvars.example
 ├── vpc.tf
@@ -54,3 +55,41 @@ terraform apply
 - AWS Account
 - AWS CLI Configured
 - IAM Permissions for VPC, EKS, EC2, RDS and S3
+
+## Docker
+
+Build Image
+
+```bash
+docker build -t 8byte-devops-app .
+```
+
+## Run Container
+
+docker run -d -p 3000:3000 8byte-devops-app
+
+## Docker Hub
+
+https://hub.docker.com/repositories/ganesh492
+
+## Kubernetes
+
+Deployment
+kubectl apply -f k8s/deployment.yaml
+
+Service
+kubectl apply -f k8s/service.yaml
+
+## Application
+
+Node.js Express application exposing:
+
+GET /
+GET /health
+
+Response:
+
+{
+"message": "8Byte DevOps Assignment",
+"status": "success"
+}

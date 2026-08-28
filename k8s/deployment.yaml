@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: 8byte-devops-app
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: 8byte-devops-app
+
+  template:
+    metadata:
+      labels:
+        app: 8byte-devops-app
+
+    spec:
+      containers:
+        - name: 8byte-devops-app
+          image: ganesh492/8byte-devops-app:latest
+
+          ports:
+            - containerPort: 3000
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
