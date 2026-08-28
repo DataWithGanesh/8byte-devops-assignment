@@ -3,6 +3,7 @@ kind: Deployment
 
 metadata:
   name: 8byte-devops-app
+  namespace: dev
 
 spec:
   replicas: 2

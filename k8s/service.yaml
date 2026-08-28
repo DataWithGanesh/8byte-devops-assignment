@@ -3,6 +3,7 @@ kind: Service
 
 metadata:
   name: 8byte-devops-service
+  namespace: dev
 
 spec:
   selector:
