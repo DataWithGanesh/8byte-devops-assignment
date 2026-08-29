@@ -321,3 +321,10 @@ Investigated module limitations and documented the production-ready approach usi
 ## Author
 
 Ganesh Iranna Karadgi
+
+
+Production deployment is configured using GitHub Environments.
+
+In a real production setup, deployment approval would be enforced through required reviewers before promoting changes to production.
+
+Since this repository is maintained by a single contributor for assessment purposes, manual approval simulation is implemented through the GitHub Production Environment.

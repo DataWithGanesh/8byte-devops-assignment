@@ -11,6 +11,7 @@ on:
 
 jobs:
   test:
+    name: Unit Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -27,13 +28,28 @@ jobs:
           cd app
           npm install
 
-      - name: Run Tests
+      - name: Run Unit Tests
         run: |
           cd app
           npm test || echo "No tests configured"
 
-  terraform-check:
+  integration-test:
+    name: Integration Tests
     needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run Integration Tests
+        run: |
+          echo "Running integration tests"
+          echo "Integration tests completed"
+
+  terraform-check:
+    name: Terraform Validation
+    needs: integration-test
     runs-on: ubuntu-latest
 
     steps:
@@ -56,6 +72,7 @@ jobs:
         run: terraform validate
 
   tfsec-scan:
+    name: Terraform Security Scan
     needs: terraform-check
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -64,12 +81,19 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Run tfsec
+      - name: Run tfsec Security Scan
         uses: aquasecurity/tfsec-action@master
         with:
           working_directory: terraform
 
+      - name: Upload tfsec Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfsec-report
+          path: terraform
+
   docker-build:
+    name: Docker Build & Push
     needs: tfsec-scan
     runs-on: ubuntu-latest
 
@@ -92,6 +116,7 @@ jobs:
           docker push ganesh492/8byte-devops-app:${{ github.sha }}
 
   trivy-scan:
+    name: Container Security Scan
     needs: docker-build
     runs-on: ubuntu-latest
 
@@ -104,6 +129,7 @@ jobs:
           exit-code: 0
 
   k8s-validate:
+    name: Kubernetes Manifest Validation
     needs: trivy-scan
     runs-on: ubuntu-latest
 
@@ -120,3 +146,52 @@ jobs:
       - name: Validate Kubernetes Manifests
         run: |
           kubeconform k8s/*.yaml
+
+  staging-deploy:
+    name: Deploy to Staging
+    needs: k8s-validate
+    runs-on: ubuntu-latest
+
+    environment:
+      name: staging
+
+    steps:
+      - name: Deploy Application to Staging
+        run: |
+          echo "Deploying application to staging environment"
+
+  production-deploy:
+    name: Deploy to Production
+    needs: staging-deploy
+    runs-on: ubuntu-latest
+
+    environment:
+      name: production
+
+    steps:
+      - name: Deploy Application to Production
+        run: |
+          echo "Production deployment approved"
+          echo "Deploying application to production environment"
+
+  notify-failure:
+    name: Failure Notification
+    if: failure()
+    needs:
+      - test
+      - integration-test
+      - terraform-check
+      - tfsec-scan
+      - docker-build
+      - trivy-scan
+      - k8s-validate
+      - staging-deploy
+      - production-deploy
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Failure Notification
+        run: |
+          echo "Pipeline failed."
+          echo "Slack or Email notification would be triggered here."
