@@ -1,76 +1,42 @@
 # 8Byte DevOps Assignment
 
-## Overview
+## Author
 
-This repository contains Infrastructure as Code (IaC), containerization, Kubernetes deployment manifests, and CI/CD automation for deploying a sample Node.js application on AWS.
-
-The infrastructure is provisioned using Terraform and follows security, scalability, and operational best practices.
+**Ganesh Iranna Karadgi**
 
 ---
 
-## Architecture
+# Assignment Objective
 
-### Components
+This project demonstrates the implementation of a production-oriented DevOps platform on AWS using Infrastructure as Code, CI/CD automation, security scanning, monitoring, logging, and deployment best practices.
 
-- AWS VPC
-- Public Subnets
-- Private Subnets
-- NAT Gateway
-- Bastion Host
-- Amazon EKS Cluster
-- PostgreSQL RDS
-- Security Groups
-- S3 Backend for Terraform State
-- Kubernetes Deployment & Service
-- Docker Containerization
+The solution covers:
 
-### High-Level Architecture
-
-```text
-Internet
-   |
-Application Load Balancer
-   |
-EKS Cluster (Private Subnets)
-   |
-PostgreSQL RDS
-
-Bastion Host (Public Subnet)
-
-Terraform State
-      |
-      S3 Backend
-```
+- Infrastructure Provisioning using Terraform
+- Application Containerization using Docker
+- Kubernetes Deployment
+- CI/CD Automation using GitHub Actions
+- Security Scanning
+- Monitoring & Observability
+- Centralized Logging
+- Production Deployment Workflow
+- Documentation & Operational Readiness
 
 ---
 
-## Terraform Structure
+# Architecture Overview
 
-```text
-terraform/
-├── terraform.tf
-├── variables.tf
-├── terraform.tfvars.example
-├── vpc.tf
-├── eks.tf
-├── rds.tf
-├── bastion-ec2.tf
-├── data.tf
-├── outputs.tf
-```
+## Infrastructure Components
 
----
+### AWS Networking
 
-## Infrastructure Provisioned
-
-### Networking
-
-- Custom VPC
-- 3 Public Subnets
-- 3 Private Subnets
+- VPC
 - Internet Gateway
 - NAT Gateway
+- Public Subnets
+- Private Subnets
 - Route Tables
+- Security Groups
 
 ### Compute
 
@@ -81,184 +47,416 @@ terraform/
 ### Database
 
 - PostgreSQL RDS
-- Multi-layer security through Security Groups
+
+### Application
+
+- Node.js Application
+- Docker Container
+- Kubernetes Deployment
+- Kubernetes Service
+
+### CI/CD
+
+- GitHub Repository
+- GitHub Actions
+- Docker Hub Registry
+
+### Monitoring
+
+- Prometheus
+- Grafana
+- Infrastructure Dashboard
+- Application Dashboard
+
+### Logging
+
+- Fluent Bit
+- CloudWatch Agent
+- CloudWatch Logs
+
+### Security
+
+- tfsec
+- Trivy
+- Security Groups
+- KMS Encryption
+- VPC Flow Logs
+
+---
+
+# High Level Architecture
+
+```text
+
+Developer
+    |
+    v
+
+GitHub Repository
+    |
+    v
+
+GitHub Actions CI/CD Pipeline
+    |
+    +-------------------------+
+    |                         |
+    v                         v
+
+Terraform Validation      Security Scans
+(tf fmt/validate)         (tfsec + Trivy)
+
+    |
+    v
+
+Docker Build
+    |
+    v
+
+Docker Hub
+    |
+    v
+
+Kubernetes Deployment
+    |
+    v
+
+Amazon EKS
+    |
+    v
+
+Node.js Application Pods
+    |
+    v
+
+PostgreSQL RDS
+
+```
+
+---
+
+# Repository Structure
+
+```text
+
+8byte-devops-assignment/
+
+├── app/
+│   ├── server.js
+│   ├── Dockerfile
+│   ├── package.json
+│
+├── terraform/
+│   ├── vpc.tf
+│   ├── eks.tf
+│   ├── rds.tf
+│   ├── bastion-ec2.tf
+│   ├── variables.tf
+│   ├── outputs.tf
+│
+├── k8s/
+│   ├── deployment.yaml
+│   ├── service.yaml
+│
+├── monitoring/
+│   ├── prometheus-config.yaml
+│   ├── grafana-dashboard-app.json
+│   ├── grafana-dashboard-infra.json
+│   └── dashboards.md
+│
+├── logging/
+│   ├── fluent-bit-config.yaml
+│   └── cloudwatch-agent-config.json
+│
+├── .github/
+│   └── workflows/
+│       └── ci-cd.yml
+│
+├── challenges.md
+│
+└── README.md
+
+```
+
+---
+
+# Infrastructure Provisioning
+
+Infrastructure is provisioned using Terraform.
+
+## Resources Created
+
+### Networking
+
+- VPC
+- Internet Gateway
+- NAT Gateway
+- Public Subnets
+- Private Subnets
+- Route Tables
+
+### Security
+
+- Security Groups
+- Restricted Network Access
+- VPC Flow Logs
+
+### Compute
+
+- Bastion Host
+- Amazon EKS Cluster
+- EKS Managed Node Groups
+
+### Database
+
+- PostgreSQL RDS
+- Storage Encryption
 - Automated Backups
 - Deletion Protection
 
-### State Management
-
-Terraform remote state stored in AWS S3.
-
 ---
 
-## Security Considerations
+# CI/CD Pipeline
 
-The following security controls were implemented:
+GitHub Actions automates the complete deployment workflow.
 
-### Network Security
+## Pipeline Stages
 
-- Private subnets for EKS worker nodes
-- Private subnets for PostgreSQL RDS
-- Restricted Security Group Rules
-- Bastion Host access restricted to client public IP
-
-### Data Protection
-
-- RDS Storage Encryption Enabled
-- Performance Insights Encryption Enabled
-- KMS Key Rotation Enabled
-- IAM Database Authentication Enabled
-
-### Infrastructure Security
-
-- IMDSv2 Enforced on EC2 Instances
-- Private EKS API Endpoint Enabled
-- Terraform State Stored Remotely
-- VPC Flow Logs Enabled
-
----
-
-## Cost Optimization
-
-To minimize infrastructure costs:
-
-- t3.micro instances used where possible
-- Single NAT Gateway configuration
-- Minimal EKS Node Group sizing
-- RDS storage limited to required capacity
-- Automated backup retention configured for 7 days
-
----
-
-## Backup Strategy
-
-### PostgreSQL RDS
-
-- Automated backups enabled
-- Backup retention period: 7 days
-- Final snapshot created before deletion
-- Deletion protection enabled
-
-### Terraform State
-
-- Remote backend stored in S3
-- State centralized and recoverable
-
----
-
-## Terraform Commands
-
-Initialize Terraform:
+### 1. Unit Tests
 
 ```bash
-terraform init
+npm test
 ```
 
-Format Terraform Code:
+### 2. Integration Tests
+
+Application health validation.
+
+### 3. Terraform Validation
 
 ```bash
-terraform fmt
-```
-
-Validate Configuration:
-
-```bash
+terraform fmt -check
 terraform validate
 ```
 
-Generate Execution Plan:
+### 4. Terraform Security Scan
 
 ```bash
-terraform plan
+tfsec
 ```
 
-Apply Infrastructure:
+### 5. Docker Build
 
 ```bash
-terraform apply
+docker build
 ```
 
-Destroy Infrastructure:
+### 6. Docker Push
 
 ```bash
-terraform destroy
+docker push
+```
+
+### 7. Container Vulnerability Scan
+
+```bash
+trivy
+```
+
+### 8. Kubernetes Manifest Validation
+
+```bash
+kubeconform
+```
+
+### 9. Staging Deployment
+
+GitHub Environment: staging
+
+### 10. Production Deployment
+
+GitHub Environment: production
+
+### 11. Failure Notification Stage
+
+Pipeline notification placeholder for Slack/Email integration.
+
+---
+
+# Monitoring Implementation
+
+Monitoring configuration is provided for production deployment.
+
+## Prometheus Metrics
+
+Application exposes:
+
+```text
+/metrics
+```
+
+Collected Metrics:
+
+- Request Count
+- Error Count
+- Request Duration
+- Application Availability
+
+---
+
+## Grafana Dashboards
+
+### Infrastructure Dashboard
+
+Monitors:
+
+- CPU Usage
+- Memory Usage
+- Network Traffic
+- Node Health
+
+### Application Dashboard
+
+Monitors:
+
+- Request Rate
+- Error Rate
+- Response Time
+- Application Availability
+
+Dashboard definitions:
+
+```text
+monitoring/grafana-dashboard-app.json
+monitoring/grafana-dashboard-infra.json
 ```
 
 ---
 
-## Prerequisites
+# Logging Implementation
 
-- Terraform >= 1.5
-- AWS Account
-- AWS CLI Configured
-- Docker
-- kubectl
-- IAM Permissions for:
-  - VPC
-  - EKS
-  - EC2
-  - RDS
-  - S3
+Centralized logging architecture prepared.
+
+## Fluent Bit
+
+Collects:
+
+```text
+/var/log/containers/*.log
+```
+
+Forwards logs to CloudWatch.
 
 ---
 
-## Docker
+## CloudWatch Agent
 
-Build Docker Image:
+Collects:
+
+```text
+/var/log/messages
+/var/log/secure
+```
+
+---
+
+## Log Categories
+
+### Application Logs
+
+- Node.js Application Logs
+
+### System Logs
+
+- EC2 System Logs
+
+### Access Logs
+
+- Kubernetes Container Logs
+
+---
+
+# Security Controls Implemented
+
+## Infrastructure Security
+
+- Security Groups
+- Private Subnets
+- Bastion Access Restriction
+- VPC Flow Logs
+
+## Data Protection
+
+- RDS Encryption
+- KMS Key Rotation
+- IAM Database Authentication
+
+## Container Security
+
+- Trivy Vulnerability Scanning
+
+## Infrastructure Security Scanning
+
+- tfsec Security Validation
+
+## Compute Security
+
+- IMDSv2 Enabled
+- Private EKS Endpoint
+
+---
+
+# Docker
+
+Build Image
 
 ```bash
 docker build -t 8byte-devops-app .
 ```
 
-Run Container:
+Run Container
 
 ```bash
-docker run -d -p 3000:3000 8byte-devops-app
+docker run -p 3000:3000 8byte-devops-app
 ```
 
-Docker Hub Repository:
+Docker Hub Repository
 
 https://hub.docker.com/repositories/ganesh492
 
 ---
 
-## Kubernetes Deployment
+# Kubernetes Deployment
 
-Deploy Application:
+Deploy Application
 
 ```bash
 kubectl apply -f k8s/deployment.yaml
 ```
 
-Deploy Service:
+Deploy Service
 
 ```bash
 kubectl apply -f k8s/service.yaml
 ```
 
-Verify Pods:
+Verify
 
 ```bash
 kubectl get pods
-```
-
-Verify Services:
-
-```bash
 kubectl get svc
 ```
 
 ---
 
-## Application Endpoints
+# Application Endpoints
 
-### Root Endpoint
+## Root Endpoint
 
 ```http
 GET /
 ```
 
-Response:
+Response
 
 ```json
 {
@@ -267,13 +465,15 @@ Response:
 }
 ```
 
-### Health Endpoint
+---
+
+## Health Endpoint
 
 ```http
 GET /health
 ```
 
-Response:
+Response
 
 ```json
 {
@@ -283,48 +483,121 @@ Response:
 
 ---
 
-## Challenges Faced
+# Screenshots
 
-### Challenge 1
+Screenshots of the implementation are available under:
 
-Terraform formatting failures during CI execution.
+```text
+/screenshots
+```
 
-**Resolution:**
-Used terraform fmt and verified formatting locally before pushing changes.
+Suggested screenshots:
 
-### Challenge 2
-
-Security findings reported by tfsec.
-
-**Resolution:**
-Restricted security group rules, enabled encryption, enabled IAM authentication, enforced IMDSv2, enabled VPC Flow Logs, and configured KMS key rotation.
-
-### Challenge 3
-
-EKS module compatibility issues with secret encryption configuration.
-
-**Resolution:**
-Investigated module limitations and documented the production-ready approach using KMS-based secret encryption.
+- GitHub Actions Success Pipeline
+- Terraform Validation
+- tfsec Scan
+- Trivy Scan
+- Docker Hub Image
+- GitHub Environments
+- Monitoring Configuration
+- Logging Configuration
 
 ---
 
-## Future Improvements
+# Challenges & Resolutions
 
-- Enable EKS Secret Encryption with Customer Managed KMS Keys
-- Integrate Prometheus & Grafana Monitoring
-- Configure Centralized Logging using CloudWatch
-- Implement ArgoCD GitOps Deployment
-- Add Slack Notifications for CI/CD Failures
+Detailed implementation challenges and resolutions are documented in:
+
+```text
+challenges.md
+```
+
+The document contains:
+
+- Security Findings
+- Terraform Issues
+- CI/CD Challenges
+- Monitoring Challenges
+- Logging Challenges
+- Production Deployment Decisions
 
 ---
 
-## Author
+# Production Deployment Note
 
-Ganesh Iranna Karadgi
+Production deployment is configured through GitHub Environments.
 
+In a real enterprise setup:
 
-Production deployment is configured using GitHub Environments.
+- Required Reviewers would be enforced
+- Change Management Approval would be required
+- Deployment Gates would be enabled
 
-In a real production setup, deployment approval would be enforced through required reviewers before promoting changes to production.
+For assessment purposes, deployment flow is demonstrated using GitHub Environments.
 
-Since this repository is maintained by a single contributor for assessment purposes, manual approval simulation is implemented through the GitHub Production Environment.
+---
+
+# Future Improvements
+
+- Deploy monitoring stack directly on EKS
+- Slack Notifications
+- ArgoCD GitOps Deployment
+- Automated Rollback Strategy
+- Blue/Green Deployment
+- Multi-Region Disaster Recovery
+
+---
+
+# Assignment Deliverables
+
+Terraform Infrastructure
+Docker Containerization
+Kubernetes Deployment
+GitHub Actions CI/CD
+tfsec Security Scanning
+Trivy Vulnerability Scanning
+Monitoring Configuration
+Logging Configuration
+Production Deployment Workflow
+Challenges Documentation
+Architecture Documentation
+Security Best Practices
+
+## Secret Management
+
+GitHub Actions Secrets are used to securely manage sensitive CI/CD credentials.
+
+Configured Secrets:
+
+- DOCKER_USERNAME
+- DOCKER_PASSWORD
+
+No sensitive credentials are stored in source code.
+
+---
+
+## Backup Strategy
+
+PostgreSQL RDS is configured with:
+
+- Automated Backups
+- Backup Retention Period
+- Deletion Protection
+- Final Snapshot Before Deletion
+
+This provides recovery capability in case of accidental deletion or data corruption.
+
+## Database Monitoring
+
+The monitoring stack includes PostgreSQL RDS metrics collected through CloudWatch.
+
+Tracked Metrics:
+
+- CPU Utilization
+- Database Connections
+- Read Latency
+- Write Latency
+- Free Storage Space
+- Freeable Memory
+
+These metrics can be visualized through Grafana dashboards using CloudWatch as a datasource.
