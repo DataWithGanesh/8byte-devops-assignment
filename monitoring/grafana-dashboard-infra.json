@@ -1,0 +1,14 @@
+{
+  "title": "Infrastructure Dashboard",
+  "panels": [
+    {
+      "title": "CPU Usage"
+    },
+    {
+      "title": "Memory Usage"
+    },
+    {
+      "title": "Disk Usage"
+    }
+  ]
+}

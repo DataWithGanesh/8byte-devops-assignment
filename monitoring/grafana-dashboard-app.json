@@ -1,0 +1,14 @@
+{
+  "title": "Application Dashboard",
+  "panels": [
+    {
+      "title": "Request Rate"
+    },
+    {
+      "title": "Error Rate"
+    },
+    {
+      "title": "Latency"
+    }
+  ]
+}
